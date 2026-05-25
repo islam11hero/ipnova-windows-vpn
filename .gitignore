@@ -9,4 +9,5 @@ src-tauri/resources/sing-box/**/sing-box.exe
 src-tauri/resources/sing-box/**/wintun.dll
 release/dist/*.zip
 release/dist/IPNOVA-VPN-*/
+release/IPNOVA-Windows-Install/resources/
 *.log
