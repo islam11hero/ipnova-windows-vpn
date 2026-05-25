@@ -28,20 +28,22 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
 
-      - name: Prepare sing-box & icons
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Prepare sing-box for Tauri bundle
         shell: pwsh
         run: |
           ./scripts/download-singbox.ps1
           New-Item -ItemType Directory -Force -Path src-tauri/resources/sing-box/windows-amd64 | Out-Null
           Copy-Item resources/sing-box/windows-amd64/* src-tauri/resources/sing-box/windows-amd64/ -Force
-          if (Test-Path release/brand/ipnova-logo-512.png) {
-            npx tauri icon release/brand/ipnova-logo-512.png
+          if (-not (Test-Path src-tauri/resources/sing-box/windows-amd64/sing-box.exe)) {
+            throw "sing-box.exe missing under src-tauri/resources after download"
           }
 
       - name: Build frontend & Tauri installer
         shell: pwsh
         run: |
-          npm ci
           npm run build
           npm run tauri:build
 

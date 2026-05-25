@@ -28,6 +28,12 @@ jobs:
           node-version: "20"
           cache: npm
       - run: npm ci
+      - name: Prepare sing-box for Tauri bundle
+        shell: pwsh
+        run: |
+          ./scripts/download-singbox.ps1
+          New-Item -ItemType Directory -Force -Path src-tauri/resources/sing-box/windows-amd64 | Out-Null
+          Copy-Item resources/sing-box/windows-amd64/* src-tauri/resources/sing-box/windows-amd64/ -Force
       - name: Cargo check (Tauri)
         run: cargo check --manifest-path src-tauri/Cargo.toml
       - name: Unit tests (scenario_logic)

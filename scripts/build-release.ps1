@@ -41,6 +41,11 @@ if (-not (Test-Path $singbox)) {
     throw "Missing $singbox — run scripts\download-singbox.ps1"
 }
 
+$tauriRes = Join-Path $Root "src-tauri\resources\sing-box\windows-amd64"
+New-Item -ItemType Directory -Force -Path $tauriRes | Out-Null
+Copy-Item (Join-Path $Root "resources\sing-box\windows-amd64\*") $tauriRes -Force
+Write-Host "Copied sing-box into src-tauri/resources for Tauri bundle"
+
 Write-Host "Building frontend ..."
 npm run build
 
