@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+src-tauri/target/
+# sing-box / wintun — CI and scripts/download-singbox.ps1 download them (keeps repo small)
+resources/sing-box/**/sing-box.exe
+resources/sing-box/**/wintun.dll
+src-tauri/resources/sing-box/**/sing-box.exe
+src-tauri/resources/sing-box/**/wintun.dll
+release/dist/*.zip
+release/dist/IPNOVA-VPN-*/
+*.log

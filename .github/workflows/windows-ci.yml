@@ -1,0 +1,63 @@
+name: Windows CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  tauri-check:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - name: Cargo check (Tauri)
+        run: cargo check --manifest-path src-tauri/Cargo.toml
+      - name: Unit tests (scenario_logic)
+        run: cargo test --manifest-path src-tauri/Cargo.toml scenario_logic -- --nocapture
+      - name: Smoke — module layout
+        shell: pwsh
+        run: |
+          $files = @(
+            "src-tauri/src/vpn/mod.rs",
+            "src-tauri/src/vpn/connect.rs",
+            "src-tauri/src/vpn/status.rs",
+            "src-tauri/src/vpn/logs.rs",
+            "src-tauri/src/wininet_registry.rs"
+          )
+          foreach ($f in $files) {
+            if (-not (Test-Path $f)) { throw "Missing $f" }
+          }
+          Write-Host "VPN module split OK"
+
+  # Enable when Azure Trusted Signing credentials are in repo secrets:
+  # windows-sign:
+  #   runs-on: windows-latest
+  #   needs: tauri-check
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: azure/trusted-signing-action@v0
+  #       with:
+  #         azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #         azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #         azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+  #         endpoint: https://eus.codesigning.azure.net
+  #         trusted-signing-account-name: ${{ secrets.TRUSTED_SIGNING_ACCOUNT }}
+  #         certificate-profile-name: IPNOVA-Release

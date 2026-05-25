@@ -1,0 +1,6 @@
+DO NOT double-click Install-IPNOVA.ps1 (old file - causes errors on French Windows).
+
+USE THIS FILE ONLY:
+  >>>  Install IPNOVA.bat  <<<  (double-click)
+
+If you have Install-IPNOVA.ps1 on Desktop from before, DELETE it.

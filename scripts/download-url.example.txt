@@ -1,0 +1,4 @@
+# ضع هنا رابط تحميل مباشر (سطر واحد فقط)، مثال:
+# https://your-server.com/IPNOVA-VPN-0.1.0-win64.zip
+# أو رابط GitHub Releases:
+# https://github.com/YOUR_ORG/YOUR_REPO/releases/download/v0.1.0/IPNOVA-VPN-0.1.0-win64.zip

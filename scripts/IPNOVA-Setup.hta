@@ -1,0 +1,43 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<title>IPNOVA VPN</title>
+<HTA:APPLICATION
+  ID="IPNOVA"
+  APPLICATIONNAME="IPNOVA VPN"
+  BORDER="thin"
+  CAPTION="yes"
+  SHOWINTASKBAR="yes"
+  SINGLEINSTANCE="yes"
+  SYSMENU="yes"
+  WINDOWSTATE="normal"
+  SCROLL="no"
+/>
+<style>
+  body { font-family: Segoe UI, Tahoma, sans-serif; background: #0f172a; color: #f8fafc; margin: 24px; }
+  h1 { font-size: 20px; margin: 0 0 8px; }
+  p { color: #94a3b8; line-height: 1.5; }
+  button { background: #3b82f6; color: #fff; border: 0; padding: 12px 24px; font-size: 15px; border-radius: 8px; cursor: pointer; margin-top: 16px; }
+  button:hover { background: #2563eb; }
+</style>
+</head>
+<body dir="rtl">
+  <h1>IPNOVA VPN</h1>
+  <p>اضغط الزر لبدء التحميل أو التثبيت.</p>
+  <button onclick="runInstall()">تثبيت / تحميل</button>
+  <script type="text/vbscript">
+    Sub runInstall()
+      Dim sh, here, cmd
+      Set sh = CreateObject("WScript.Shell")
+      here = Replace(window.location.pathname, "/", "\")
+      If Right(here, 1) = "\" Then here = Left(here, Len(here)-1)
+      here = Left(here, InStrRev(here, "\") - 1)
+      cmd = "powershell -NoProfile -ExecutionPolicy Bypass -STA -File """ & here & "\Install-IPNOVA.ps1"""
+      sh.Run cmd, 1, True
+      window.close
+    End Sub
+    ' تشغيل تلقائي عند الفتح
+    window.setTimeout "runInstall()", 800
+  </script>
+</body>
+</html>

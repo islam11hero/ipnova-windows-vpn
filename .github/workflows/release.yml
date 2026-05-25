@@ -1,0 +1,88 @@
+# Build Windows installer on GitHub servers → publish to Releases (WiFi download for customers)
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g. 0.1.0)"
+        required: true
+        default: "0.1.0"
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Prepare sing-box & icons
+        shell: pwsh
+        run: |
+          ./scripts/download-singbox.ps1
+          New-Item -ItemType Directory -Force -Path src-tauri/resources/sing-box/windows-amd64 | Out-Null
+          Copy-Item resources/sing-box/windows-amd64/* src-tauri/resources/sing-box/windows-amd64/ -Force
+          if (Test-Path release/brand/ipnova-logo-512.png) {
+            npx tauri icon release/brand/ipnova-logo-512.png
+          }
+
+      - name: Build frontend & Tauri installer
+        shell: pwsh
+        run: |
+          npm ci
+          npm run build
+          npm run tauri:build
+
+      - name: Package for customers
+        shell: pwsh
+        run: |
+          $v = "${{ github.event.inputs.version }}"
+          if (-not $v) { $v = "${{ github.ref_name }}" -replace '^v','' }
+          if (-not $v) { $v = "0.1.0" }
+          ./scripts/build-release.ps1 -Version $v -SkipNpmCi -SkipSingbox
+          ./scripts/build-windows-installer.ps1 -Version $v -SkipNpmCi -SkipSingbox
+
+      - name: Collect release files
+        shell: pwsh
+        run: |
+          $dist = "release/dist-publish"
+          New-Item -ItemType Directory -Force -Path $dist | Out-Null
+          Copy-Item release/dist/*.zip $dist -Force -ErrorAction SilentlyContinue
+          $setup = Get-ChildItem src-tauri/target/release/bundle -Recurse -Filter "*setup*.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($setup) {
+            Copy-Item $setup.FullName (Join-Path $dist "IPNOVA-VPN-Setup.exe") -Force
+            Write-Host "Setup exe: $($setup.FullName)"
+          } else {
+            Write-Error "No *setup*.exe found — check tauri build logs"
+          }
+
+      - name: Upload CI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: IPNOVA-VPN-windows-build
+          path: release/dist-publish/*
+
+      - name: Publish GitHub Release (WiFi download link)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', github.event.inputs.version) }}
+          name: IPNOVA VPN ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', github.event.inputs.version) }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            release/dist-publish/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
