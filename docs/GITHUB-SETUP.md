@@ -75,6 +75,15 @@ git push origin v0.1.1
 
 بدونها يُبنى المثبت لكن التطبيق يطلب `.env` عند التشغيل.
 
+**من جهازك (مرة واحدة):**
+
+```bash
+gh auth login
+./scripts/setup-github-secrets.sh
+```
+
+يقرأ القيم من `.env` المحلي ويرفعها إلى GitHub Secrets.
+
 ## أسرار لا تُرفع
 
 - `.env` — محلي فقط (للتطوير)
