@@ -4,7 +4,8 @@
 param(
     [string]$Version = "0.1.0",
     [switch]$SkipNpmCi,
-    [switch]$SkipSingbox
+    [switch]$SkipSingbox,
+    [switch]$SkipTauriBuild
 )
 
 $ErrorActionPreference = "Stop"
@@ -25,10 +26,12 @@ if (-not $SkipSingbox) {
 Copy-Item "$Root\resources\sing-box\windows-amd64\*" "$Root\src-tauri\resources\sing-box\windows-amd64\" -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path "$Root\src-tauri\resources\sing-box\windows-amd64" | Out-Null
 
-if (-not $SkipNpmCi) {
-    npm ci
-    npm run build
-    npm run tauri:build
+if (-not $SkipTauriBuild) {
+    if (-not $SkipNpmCi) {
+        npm ci
+        npm run build
+        npm run tauri:build
+    }
 }
 
 $exe = Get-ChildItem -Path "$Root\src-tauri\target\release" -Recurse -Filter "*.exe" -ErrorAction SilentlyContinue |

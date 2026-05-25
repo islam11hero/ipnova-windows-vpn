@@ -43,18 +43,22 @@ jobs:
 
       - name: Build frontend & Tauri installer
         shell: pwsh
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_SITE_URL: ${{ secrets.VITE_SITE_URL }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
           npm run build
           npm run tauri:build
 
-      - name: Package for customers
+      - name: Package release ZIP (installer already built)
         shell: pwsh
         run: |
           $v = "${{ github.event.inputs.version }}"
           if (-not $v) { $v = "${{ github.ref_name }}" -replace '^v','' }
           if (-not $v) { $v = "0.1.0" }
-          ./scripts/build-release.ps1 -Version $v -SkipNpmCi -SkipSingbox
-          ./scripts/build-windows-installer.ps1 -Version $v -SkipNpmCi -SkipSingbox
+          ./scripts/build-windows-installer.ps1 -Version $v -SkipNpmCi -SkipSingbox -SkipTauriBuild
 
       - name: Collect release files
         shell: pwsh

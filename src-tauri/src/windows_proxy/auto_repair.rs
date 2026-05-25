@@ -130,7 +130,10 @@ pub fn run_auto_repair(
     use super::winhttp::{is_winhttp_proxy_for_port, reset_winhttp_stack};
     use super::wininet::{is_wininet_proxy_for_port, refresh_wininet_connections};
     use crate::vpn::singbox_binary;
-    use crate::vpn::state::{singbox_process_running, vpn_state_dir, VPN_CHILD, VPN_SYSTEM_PROXY_ACTIVE};
+    use crate::vpn::{
+        singbox_process_running, vpn_state_dir, VPN_CHILD, VPN_PROXY_STATE_DIR,
+        VPN_SYSTEM_PROXY_ACTIVE,
+    };
     use crate::wininet_registry::wininet_has_pac_or_wpad;
 
     let state_dir = vpn_state_dir(app)?;
@@ -188,7 +191,7 @@ pub fn run_auto_repair(
         if let Ok(mut g) = VPN_SYSTEM_PROXY_ACTIVE.lock() {
             *g = false;
         }
-        if let Ok(mut g) = crate::vpn::state::VPN_PROXY_STATE_DIR.lock() {
+        if let Ok(mut g) = VPN_PROXY_STATE_DIR.lock() {
             *g = None;
         }
         steps.push(step(
@@ -251,7 +254,7 @@ pub fn run_auto_repair(
 
     if mode == AutoRepairMode::Full {
         // 4 — 2026 stack: WinHttpAutoProxySvc / WcmSvc
-        if input.wcm_issue || is_modern_windows_stack() {
+        if input.wcm_issue {
             let wcm = if crate::windows_security::is_process_elevated() {
                 super::wcm::apply_wcm_fix_full()
             } else {

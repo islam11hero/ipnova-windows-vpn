@@ -14,8 +14,9 @@ use tauri::Manager;
 
 #[cfg(windows)]
 use crate::windows_proxy::{
-    disable_system_proxy, harden_singbox_config, is_wininet_proxy_for_port,
-    prepare_system_proxy_config, SYSTEM_PROXY_PORT,
+    disable_system_proxy, harden_singbox_config, is_winhttp_proxy_for_port,
+    is_wininet_proxy_for_port, prepare_system_proxy_config, reset_orphaned_proxies,
+    SYSTEM_PROXY_PORT,
 };
 #[cfg(windows)]
 use crate::windows_security::{kill_pid, spawn_singbox_elevated};
@@ -191,10 +192,9 @@ pub fn singbox_process_running() -> bool {
                 if alive {
                     return true;
                 }
-                *VPN_EXTERNAL_PID.lock().ok().and_then(|mut g| {
+                if let Ok(mut g) = VPN_EXTERNAL_PID.lock() {
                     *g = None;
-                    Some(())
-                });
+                }
             }
         }
     }
@@ -204,11 +204,13 @@ pub fn singbox_process_running() -> bool {
 
 #[cfg(windows)]
 pub(crate) fn cleanup_active_proxy() {
-    let should = VPN_SYSTEM_PROXY_ACTIVE
+    let flag_active = VPN_SYSTEM_PROXY_ACTIVE
         .lock()
         .ok()
-        .is_some_and(|g| *g)
-        || is_wininet_proxy_for_port(SYSTEM_PROXY_PORT);
+        .is_some_and(|g| *g);
+    let wininet_orphan = is_wininet_proxy_for_port(SYSTEM_PROXY_PORT);
+    let winhttp_orphan = is_winhttp_proxy_for_port(SYSTEM_PROXY_PORT);
+    let should = flag_active || wininet_orphan || winhttp_orphan;
 
     if !should {
         return;
@@ -217,6 +219,15 @@ pub(crate) fn cleanup_active_proxy() {
     if let Some(d) = dir.as_ref() {
         let _ = disable_system_proxy(d);
         append_support_log(d, "cleanup", "restored system proxy after disconnect/crash");
+    } else if wininet_orphan || winhttp_orphan {
+        let (ie, wh) = reset_orphaned_proxies(SYSTEM_PROXY_PORT);
+        let log_dir = std::env::temp_dir().join("ipnova-vpn-cleanup");
+        let _ = std::fs::create_dir_all(&log_dir);
+        append_support_log(
+            &log_dir,
+            "cleanup",
+            &format!("orphan proxy reset without state dir (WinINet={ie}, WinHTTP={wh})"),
+        );
     }
     if let Ok(mut g) = VPN_SYSTEM_PROXY_ACTIVE.lock() {
         *g = false;
@@ -235,6 +246,8 @@ pub fn emergency_vpn_cleanup(app: &tauri::AppHandle) {
         append_support_log(&dir, "app_exit", "emergency cleanup");
     }
     let _ = stop_child();
+    #[cfg(windows)]
+    cleanup_active_proxy();
 }
 
 pub(crate) fn write_config(

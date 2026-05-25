@@ -14,7 +14,6 @@ use super::process::hidden_command;
 #[cfg(windows)]
 use super::scenario_logic::wcm_24h2_issue;
 #[cfg(windows)]
-use crate::windows_powershell::run_powershell;
 #[cfg(windows)]
 use crate::windows_security::is_process_elevated;
 
@@ -101,12 +100,12 @@ fn service_start_type(name: &str) -> String {
         .ok()
         .and_then(|k| k.get_value::<u32, _>("Start").ok())
         .map(|v| match v {
-            2 => "Automatic",
-            3 => "Manual",
-            4 => "Disabled",
-            _ => "Unknown",
+            2 => "Automatic".to_string(),
+            3 => "Manual".to_string(),
+            4 => "Disabled".to_string(),
+            _ => "Unknown".to_string(),
         })
-        .unwrap_or_else(|| "Unknown".into())
+        .unwrap_or_else(|| "Unknown".to_string())
 }
 
 #[cfg(windows)]

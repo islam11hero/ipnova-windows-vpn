@@ -62,10 +62,23 @@ git push origin v0.1.1
 
 ---
 
+## أسرار GitHub (للبناء في Actions)
+
+في **Settings → Secrets and variables → Actions** أضف:
+
+| Secret | مثال |
+|--------|------|
+| `VITE_SUPABASE_URL` | `https://xxx.supabase.co` |
+| `VITE_SUPABASE_ANON_KEY` | مفتاح anon |
+| `VITE_API_BASE_URL` | `https://api.vpnnovo.example` |
+| `VITE_SITE_URL` | `https://vpnnovo.example` |
+
+بدونها يُبنى المثبت لكن التطبيق يطلب `.env` عند التشغيل.
+
 ## أسرار لا تُرفع
 
-- `.env` — محلي فقط (Supabase و API)
-- انسخ من `.env.example` على كل جهاز
+- `.env` — محلي فقط (للتطوير)
+- انسخ من `.env.example` على جهاز التطوير
 
 ---
 

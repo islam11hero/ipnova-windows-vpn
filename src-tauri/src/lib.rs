@@ -182,14 +182,14 @@ pub fn run() {
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
-            vpn::vpn_connect,
-            vpn::vpn_disconnect,
-            vpn::vpn_status,
-            vpn::vpn_preflight,
-            vpn::vpn_support_log_info,
-            vpn::vpn_open_support_logs,
-            vpn::vpn_recover_stale,
-            vpn::vpn_export_diagnostics,
+            vpn::connect::vpn_connect,
+            vpn::connect::vpn_disconnect,
+            vpn::status::vpn_status,
+            vpn::status::vpn_preflight,
+            vpn::logs::vpn_support_log_info,
+            vpn::logs::vpn_open_support_logs,
+            vpn::logs::vpn_recover_stale,
+            vpn::logs::vpn_export_diagnostics,
             secure_store::secure_store_session,
             secure_store::secure_load_session,
             secure_store::secure_clear_session,

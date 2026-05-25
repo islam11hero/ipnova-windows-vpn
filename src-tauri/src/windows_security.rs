@@ -477,12 +477,12 @@ pub fn spawn_singbox_elevated(
     let pid_s = pid_file.to_string_lossy();
 
     let ps = format!(
-        "$p = Start-Process -FilePath '{binary}' \
-         -ArgumentList 'run','-c','{config}','-D','{workdir}' \
-         -WorkingDirectory '{workdir}' \
+        "$p = Start-Process -FilePath '{binary_s}' \
+         -ArgumentList 'run','-c','{config_s}','-D','{workdir_s}' \
+         -WorkingDirectory '{workdir_s}' \
          -Verb RunAs -PassThru -WindowStyle Hidden; \
          if (-not $p) {{ throw 'Start-Process failed' }}; \
-         $p.Id | Out-File -FilePath '{pid}' -Encoding ascii -NoNewline"
+         $p.Id | Out-File -FilePath '{pid_s}' -Encoding ascii -NoNewline"
     );
 
     let status = Command::new("powershell")

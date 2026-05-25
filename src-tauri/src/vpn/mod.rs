@@ -12,6 +12,7 @@ pub use logs::{
 };
 pub use state::{
     active_mode_label, emergency_vpn_cleanup, singbox_binary, singbox_process_running,
-    vpn_state_dir, VpnPreflight, VpnRuntimeStatus,
+    vpn_state_dir, VpnPreflight, VpnRuntimeStatus, VPN_CHILD, VPN_EXTERNAL_PID,
+    VPN_PROXY_STATE_DIR, VPN_SYSTEM_PROXY_ACTIVE,
 };
 pub use status::{vpn_preflight, vpn_status};
