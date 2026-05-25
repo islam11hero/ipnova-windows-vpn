@@ -130,10 +130,8 @@ pub fn run_auto_repair(
     use super::winhttp::{is_winhttp_proxy_for_port, reset_winhttp_stack};
     use super::wininet::{is_wininet_proxy_for_port, refresh_wininet_connections};
     use crate::vpn::singbox_binary;
-    use crate::vpn::{
-        singbox_process_running, vpn_state_dir, VPN_CHILD, VPN_PROXY_STATE_DIR,
-        VPN_SYSTEM_PROXY_ACTIVE,
-    };
+    use crate::vpn::{singbox_process_running, vpn_state_dir};
+    use crate::vpn::state::{VPN_CHILD, VPN_PROXY_STATE_DIR, VPN_SYSTEM_PROXY_ACTIVE};
     use crate::wininet_registry::wininet_has_pac_or_wpad;
 
     let state_dir = vpn_state_dir(app)?;
@@ -390,21 +388,22 @@ pub fn run_auto_repair(
     let recommend_reconnect =
         !singbox_running || !report.connected_healthy || steps.iter().any(|s| s.id == "orphan_proxy" && s.status == "ok");
 
-    let summary_en = if ok && report.connected_healthy {
-        "Auto-Repair completed — VPN proxy is healthy.".into()
+    let summary_en: String = if ok && report.connected_healthy {
+        "Auto-Repair completed — VPN proxy is healthy.".to_string()
     } else if ok {
-        "Auto-Repair completed — tap Connect or Reconnect.".into()
+        "Auto-Repair completed — tap Connect or Reconnect.".to_string()
     } else if has_ok {
-        "Auto-Repair partially applied — see steps; admin may be required for WinHTTP/Wi‑Fi.".into()
+        "Auto-Repair partially applied — see steps; admin may be required for WinHTTP/Wi‑Fi."
+            .to_string()
     } else {
-        "Auto-Repair could not fix all issues — check Settings → Proxy diagnostics.".into()
+        "Auto-Repair could not fix all issues — check Settings → Proxy diagnostics.".to_string()
     };
 
     append_proxy_log(&state_dir, "auto_repair_done", &summary_en);
 
-    let mode_label = match mode {
-        AutoRepairMode::Startup => "startup",
-        AutoRepairMode::Full => "full",
+    let mode_label: String = match mode {
+        AutoRepairMode::Startup => "startup".to_string(),
+        AutoRepairMode::Full => "full".to_string(),
     };
 
     let elevation = admin_reason
@@ -414,7 +413,7 @@ pub fn run_auto_repair(
 
     Ok(AutoRepairReport {
         ok,
-        mode: mode_label.into(),
+        mode: mode_label,
         steps,
         summary_en,
         recommend_reconnect,
@@ -432,7 +431,7 @@ pub fn run_auto_repair(_app: &tauri::AppHandle, mode: AutoRepairMode) -> Result<
     };
     Ok(AutoRepairReport {
         ok: false,
-        mode: mode_label.into(),
+        mode: mode_label,
         steps: vec![step(
             "platform",
             "Platform",
