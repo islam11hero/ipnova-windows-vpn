@@ -1,12 +1,4 @@
 fn main() {
-    #[cfg(target_os = "windows")]
-    {
-        let mut res = winres::WindowsResource::new();
-        res.set_manifest("windows/app.manifest");
-        if let Err(e) = res.compile() {
-            eprintln!("winres compile warning: {e}");
-        }
-    }
-
+    // Tauri embeds Windows VERSION + resources; winres caused duplicate VERSION (LNK1123).
     tauri_build::build()
 }
