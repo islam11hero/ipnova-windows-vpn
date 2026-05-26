@@ -22,17 +22,17 @@
 
 **Actions** → **Release** → **Run workflow** → version: `0.1.0`
 
-### 3) رابط التحميل للعميل (Wi‑Fi)
+### 3) رابط التحميل للعميل (Wi‑Fi) — جاهز
 
-```
-https://github.com/islam11hero/ipnova-windows-vpn/releases/download/v0.1.0/IPNOVA-VPN-Setup.exe
-```
+**آخر إصدار (موصى به):**
 
-أو دائماً آخر إصدار:
-
-```
 https://github.com/islam11hero/ipnova-windows-vpn/releases/latest
-```
+
+حمّل: **`IPNOVA-VPN-Setup.exe`**
+
+رابط مباشر (v0.1.0):
+
+https://github.com/islam11hero/ipnova-windows-vpn/releases/download/v0.1.0/IPNOVA-VPN-Setup.exe
 
 ### 4) رسالة للعميل
 

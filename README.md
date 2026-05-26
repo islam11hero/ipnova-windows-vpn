@@ -2,9 +2,12 @@
 
 تطبيق سطح مكتب يتصل بـ **vpnnovo** و **Marzban VLESS** بدون لصق روابط الاشتراك.
 
-## تحميل العميل (Wi‑Fi)
+## تحميل العميل (Wi‑Fi) — متوفر
 
-**https://github.com/islam11hero/ipnova-windows-vpn/releases/latest** → `IPNOVA-VPN-Setup.exe`
+| ملف | الرابط |
+|-----|--------|
+| **المثبت (موصى به)** | [IPNOVA-VPN-Setup.exe](https://github.com/islam11hero/ipnova-windows-vpn/releases/download/v0.1.0/IPNOVA-VPN-Setup.exe) |
+| آخر إصدار | https://github.com/islam11hero/ipnova-windows-vpn/releases/latest |
 
 | توثيق | |
 |--------|---|
