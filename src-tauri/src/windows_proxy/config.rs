@@ -14,7 +14,7 @@ pub fn prepare_system_proxy_config(config: &mut Value) {
     let _proxy_server = proxy_server_value(SYSTEM_PROXY_PORT);
 
     obj.insert(
-        "inbounds".into(),
+        "inbounds".to_string(),
         serde_json::json!([{
             "type": "mixed",
             "tag": "mixed-in",
@@ -26,11 +26,11 @@ pub fn prepare_system_proxy_config(config: &mut Value) {
     );
 
     let route = obj
-        .entry("route".into())
+        .entry("route".to_string())
         .or_insert_with(|| Value::Object(serde_json::Map::new()));
     if let Some(route_obj) = route.as_object_mut() {
         route_obj
-            .entry("auto_detect_interface".into())
+            .entry("auto_detect_interface".to_string())
             .or_insert(serde_json::json!(true));
 
         let sniff_rule = serde_json::json!({ "action": "sniff" });
@@ -46,7 +46,7 @@ pub fn prepare_system_proxy_config(config: &mut Value) {
                 }
             }
             _ => {
-                route_obj.insert("rules".into(), serde_json::json!([sniff_rule]));
+                route_obj.insert("rules".to_string(), serde_json::json!([sniff_rule]));
             }
         }
 
@@ -76,7 +76,7 @@ pub fn harden_singbox_config(config: &mut Value) {
 
     if !obj.contains_key("dns") {
         obj.insert(
-            "dns".into(),
+            "dns".to_string(),
             serde_json::json!({
                 "servers": [
                     {
@@ -99,7 +99,7 @@ pub fn harden_singbox_config(config: &mut Value) {
     }
 
     let route = obj
-        .entry("route".into())
+        .entry("route".to_string())
         .or_insert_with(|| Value::Object(serde_json::Map::new()));
     if let Some(route_obj) = route.as_object_mut() {
         let quic_reject = serde_json::json!({ "protocol": "quic", "action": "reject" });
@@ -115,7 +115,7 @@ pub fn harden_singbox_config(config: &mut Value) {
                 }
             }
             _ => {
-                route_obj.insert("rules".into(), serde_json::json!([quic_reject]));
+                route_obj.insert("rules".to_string(), serde_json::json!([quic_reject]));
             }
         }
     }
