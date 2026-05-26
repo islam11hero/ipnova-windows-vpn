@@ -25,7 +25,9 @@ pub fn prepare_system_proxy_config(config: &mut Value) {
         }]),
     );
 
-    let route = obj.entry("route".into()).or_insert_with(|| serde_json::json!({}));
+    let route = obj
+        .entry("route".into())
+        .or_insert_with(|| Value::Object(serde_json::Map::new()));
     if let Some(route_obj) = route.as_object_mut() {
         route_obj
             .entry("auto_detect_interface".into())
@@ -96,7 +98,9 @@ pub fn harden_singbox_config(config: &mut Value) {
         );
     }
 
-    let route = obj.entry("route".into()).or_insert_with(|| serde_json::json!({}));
+    let route = obj
+        .entry("route".into())
+        .or_insert_with(|| Value::Object(serde_json::Map::new()));
     if let Some(route_obj) = route.as_object_mut() {
         let quic_reject = serde_json::json!({ "protocol": "quic", "action": "reject" });
         match route_obj.get_mut("rules") {

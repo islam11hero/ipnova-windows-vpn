@@ -154,8 +154,8 @@ pub fn run_auto_repair(
         || VPN_CHILD
             .lock()
             .ok()
-            .and_then(|g| g.as_ref())
-            .is_some();
+            .map(|g| g.is_some())
+            .unwrap_or(false);
     let proxy_active = VPN_SYSTEM_PROXY_ACTIVE
         .lock()
         .ok()
